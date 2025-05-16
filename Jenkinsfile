@@ -1,7 +1,8 @@
 pipeline {
 environment { // Declaration of environment variables
 DOCKER_ID = "anthonypho" // replace this with your docker-id
-DOCKER_IMAGE = "datascientestapi_exam"
+DOCKER_IMAGE_CAST = "datascientestapi_exam_cast"
+DOCKER_IMAGE_MOVIE = "datascientestapi_exam_movie"
 DOCKER_TAG = "v.${BUILD_ID}.0" // we will tag our images with the current build in order to increment the value by 1 with each new build
 }
 agent any // Jenkins will be able to select all available agents
@@ -11,7 +12,8 @@ stages {
                 script {
                 sh '''
                  docker rm -f jenkins
-                 docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+                 docker build -t $DOCKER_ID/$DOCKER_IMAGE_CAST:$DOCKER_TAG ./cast-service/app/Dockerfile
+		 docker build -t $DOCKER_ID/$DOCKER_IMAGE_MOVIE:$DOCKER_TAG ./movie-service/app/Dockerfile
                 sleep 6
                 '''
                 }
@@ -21,7 +23,8 @@ stages {
                 steps {
                     script {
                     sh '''
-                    docker run -d -p 80:80 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
+                    docker run -d -p 80:80 --name jenkins $DOCKER_ID/$DOCKER_IMAGE_CAST:$DOCKER_TAG
+		    docker run -d -p 81:81 --name jenkins $DOCKER_ID/$DOCKER_IMAGE_MOVIE:$DOCKER_TAG
                     sleep 10
                     '''
                     }
@@ -49,7 +52,8 @@ stages {
                 script {
                 sh '''
                 docker login -u $DOCKER_ID -p $DOCKER_PASS
-                docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
+                docker push $DOCKER_ID/$DOCKER_IMAGE_CAST:$DOCKER_TAG
+		docker push $DOCKER_ID/$DOCKER_IMAGE_MOVIE:$DOCKER_TAG
                 '''
                 }
             }
@@ -128,3 +132,4 @@ stage('Deploiement en staging'){
 
 }
 }
+
