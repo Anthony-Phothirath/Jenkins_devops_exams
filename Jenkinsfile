@@ -11,6 +11,8 @@ stages {
             steps {
                 script {
                 sh '''
+		 docker rm -f jenkins_cast
+		 docker rm -f jenkins-movie
                  docker build -t $DOCKER_ID/$DOCKER_IMAGE_CAST:$DOCKER_TAG ./cast-service/
 		 docker build -t $DOCKER_ID/$DOCKER_IMAGE_MOVIE:$DOCKER_TAG ./movie-service/
                 sleep 6
@@ -22,8 +24,8 @@ stages {
                 steps {
                     script {
                     sh '''
-                    docker run -d -p 80:80 --name jenkins $DOCKER_ID/$DOCKER_IMAGE_CAST:$DOCKER_TAG
-		    docker run -d -p 81:81 --name jenkins $DOCKER_ID/$DOCKER_IMAGE_MOVIE:$DOCKER_TAG
+                    docker run -d -p 80:80 --name jenkins_cast $DOCKER_ID/$DOCKER_IMAGE_CAST:$DOCKER_TAG
+		    docker run -d -p 81:81 --name jenkins_movie $DOCKER_ID/$DOCKER_IMAGE_MOVIE:$DOCKER_TAG
                     sleep 10
                     '''
                     }
